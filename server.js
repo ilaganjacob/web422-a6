@@ -16,6 +16,7 @@ let jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("jwt"),
   secretOrKey: process.env.JWT_SECRET,
 };
+
 let strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
   console.log("payload received", jwt_payload);
   if (jwt_payload) {
