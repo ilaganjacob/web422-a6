@@ -43,9 +43,9 @@ passport.use(strategy);
 // add passport as application-level middleware
 app.use(passport.initialize());
 
-app.get("/", (req, res) => {
-  res.send("API is running");
-});
+// app.get("/", (req, res) => {
+//   res.send("API is running");
+// });
 
 app.post("/api/user/register", (req, res) => {
   userService
