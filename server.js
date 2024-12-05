@@ -9,8 +9,14 @@ const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const passportJWT = require("passport-jwt");
 
+const HTTP_PORT = process.env.PORT || 8080;
+
 let ExtractJwt = passportJWT.ExtractJwt;
 let JwtStrategy = passportJWT.Strategy;
+
+app.use(express.json());
+app.use(cors());
+// app.use(passport.initialize());
 
 let jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("jwt"),
@@ -19,6 +25,7 @@ let jwtOptions = {
 
 let strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
   console.log("payload received", jwt_payload);
+
   if (jwt_payload) {
     // The following will ensure that all routes using
     // passport.authenticate have a req.user._id, req.user.userName, req.user.fullName & req.user.role values
@@ -32,20 +39,13 @@ let strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
   }
 });
 
-const HTTP_PORT = process.env.PORT || 8080;
-
-app.use(express.json());
-app.use(cors());
-
-// tell passport to use our "strategy"
 passport.use(strategy);
-
-// add passport as application-level middleware
 app.use(passport.initialize());
 
-// app.get("/", (req, res) => {
-//   res.send("API is running");
-// });
+// test get
+app.get("/", (req, res) => {
+  res.send({ message: "App listening" });
+});
 
 app.post("/api/user/register", (req, res) => {
   userService
@@ -68,9 +68,7 @@ app.post("/api/user/login", (req, res) => {
       };
 
       let token = jwt.sign(payload, jwtOptions.secretOrKey);
-
-      // include the token property
-      res.json({ message: `login successful. token: ${token}` });
+      res.json({ message: "login successful", token: token, user: user });
     })
     .catch((msg) => {
       res.status(422).json({ message: msg });
